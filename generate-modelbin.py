@@ -16,6 +16,7 @@ def log(sformat, *args):
 	print(sformat % (args))
 	return
 
+
 if __name__ == '__main__':
 
 	_version = platform.python_version() 
@@ -28,7 +29,7 @@ if __name__ == '__main__':
 	line = f.readline()
 	while line:
 		wakati = mecab.parse(line)
-		model_txt = "__label__1," + wakati
+		model_txt = "__label__1 , " + wakati
 		fo.write(model_txt)
 		line = f.readline()
 	f.close
@@ -40,7 +41,7 @@ if __name__ == '__main__':
 	line = f.readline()
 	while line:
 		wakati = mecab.parse(line)
-		model_txt = "__label__2," + wakati
+		model_txt = "__label__2 , " + wakati
 		fo.write(model_txt)
 		line = f.readline()
 	f.close
@@ -48,8 +49,18 @@ if __name__ == '__main__':
 	log("output \"model.txt\"")
 
 	log("model binary making ...")
-	classifier = fastText.supervised("model.txt", "model.bin")
+	classifier = fastText.train_supervised(input="model.txt", epoch=25, lr=1.0, wordNgrams=2, verbose=2, minCount=1)
+#	classifier.save_model("model.bin")
 	log("output \"model.bin\"")
+
+	f = open("test.txt")
+	line = f.readline()
+	log("predicting ... (test data=[%s])", line.strip())
+	print(classifier.predict(line.strip()))
+
+	line = f.readline()
+	log("predicting ... (test data=[%s])", line.strip())
+	print(classifier.predict(line.strip()))
 
 	sys.exit(0)
 
