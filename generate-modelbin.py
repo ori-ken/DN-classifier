@@ -27,11 +27,14 @@ if __name__ == '__main__':
 	f = open("/prod/git/scraping-rbp/scraping1.dat")
 	fo = open("/prod/git/DN-classifier/model.txt", "w")
 	line = f.readline()
+	n = 1
 	while line:
 		wakati = mecab.parse(line)
-		model_txt = "__label__1 , " + wakati
+		model_txt = "__label__1, " + wakati
 		fo.write(model_txt)
 		line = f.readline()
+		n = n + 1
+	log("positive data: %d", n)
 	f.close
 	fo.close
 
@@ -39,26 +42,27 @@ if __name__ == '__main__':
 	f = open("/prod/git/scraping-rbp/scraping2.dat")
 	fo = open("/prod/git/DN-classifier/model.txt", "a")
 	line = f.readline()
+	n = 1
 	while line:
 		wakati = mecab.parse(line)
-		model_txt = "__label__2 , " + wakati
+		model_txt = "__label__2, " + wakati
 		fo.write(model_txt)
 		line = f.readline()
+		n = n + 1
+	log("negative data: %d", n)
 	f.close
 	fo.close
 	log("output \"model.txt\"")
 
 	log("model binary making ...")
-	classifier = fastText.train_supervised(input="model.txt", epoch=25, lr=1.0, wordNgrams=2, verbose=2, minCount=1)
+	classifier = fastText.train_supervised(input="model.txt")
+#	classifier = fastText.train_supervised(input="model2.txt", epoch=25, lr=1.0, wordNgrams=2, verbose=2, minCount=1)
 #	classifier.save_model("model.bin")
 	log("output \"model.bin\"")
 
 	f = open("test.txt")
 	line = f.readline()
-	log("predicting ... (test data=[%s])", line.strip())
-	print(classifier.predict(line.strip()))
-
-	line = f.readline()
+	line = mecab.parse(line)
 	log("predicting ... (test data=[%s])", line.strip())
 	print(classifier.predict(line.strip()))
 
